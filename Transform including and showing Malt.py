@@ -31,7 +31,7 @@ import numpy as np
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
 
-#Import the data dump and transform the data set to a pivotable data frame
+#Main Table
 df=pd.read_excel('RTD Data Dump - KDP 2017 to April 2022.xlsx',header=[2,3])
 df = df.iloc[: , 2:]
 df=df.set_index([('Unnamed: 2_level_0',   'Entity'), ('Unnamed: 3_level_0',   'Category'),
