@@ -31,7 +31,7 @@ import numpy as np
 from statsmodels.tsa.arima_model import ARIMA
 from sklearn.metrics import mean_squared_error
 
-#Main Table
+#Import the original data dump to Python and transform the data set to a pivotable data frame
 df=pd.read_excel('RTD Data Dump - KDP 2017 to April 2022.xlsx',header=[2,3])
 df = df.iloc[: , 2:]
 df=df.set_index([('Unnamed: 2_level_0',   'Entity'), ('Unnamed: 3_level_0',   'Category'),
@@ -46,6 +46,8 @@ df.columns = ['Entity', 'Category', 'Province', 'Agent','Supplier',
               'Brand Family', 'Brand', 'SKU Detail', 'Description','Vol/Unit',
               'Sub Category', 'MDM Segment', 'Date Range','Measurement','Value']
 df=df.dropna(subset=['Entity'])
+
+#Seperate Quebec Malt products from the rest of RTD volume
 df["Concat"] = df["Province"] + df["Description"]
 
 df1=df[['Province', 'Description']]
@@ -62,7 +64,7 @@ df['merge3'] = (df['_merge']).astype(object)
 df = df.groupby([df['merge3'].fillna('(blank)'),df['Brand Family'].fillna('(blank)'),df['MDM Segment'].fillna('(blank)'),df['SKU Detail'].fillna('(blank)'),df['Date Range'].fillna('(blank)'),df['Measurement'].fillna('(blank)')])['Value'].sum().reset_index()
 
 
-#Date Range
+#Tranform the time to our calendar
 df_Range=pd.read_excel('Date.xlsx')
 df4=df_Range.groupby(['Date Range'])["Date Range"].count().reset_index(name="Days count")
 df5=pd.merge(df4,df_Range, on='Date Range', how='inner')
@@ -74,5 +76,6 @@ df6=df6[(df6['Year']>2018)]
 df6=df6[(df6['Measurement']!='R1 (9L Cases)')]
 print(df6)
 
+#Generate CSV file
 df6.to_csv('RTD for CX 2024-2-19.csv')
 
